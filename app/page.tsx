@@ -1,215 +1,164 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+interface ZonePolygon {
+  id: number;
+  name: string;
+  points: number[][];
+  labelPosition?: [number, number];
+}
 
 export default function Home() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; delay: number; duration: number }>>([]);
-  const [shootingStars, setShootingStars] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const router = useRouter();
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [hoveredZone, setHoveredZone] = useState<number | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [showClickHelper, setShowClickHelper] = useState(false);
+  const [clickCoords, setClickCoords] = useState<{x: number, y: number} | null>(null);
 
-  const zones = [
-    { id: '1', name: 'Zone 1' },
-    { id: '2', name: 'Zone 2' },
-    { id: '3', name: 'Zone 3' },
-    { id: '4', name: 'Zone 4' },
-    { id: '5', name: 'Zone 5' },
-    { id: '6', name: 'Zone 6' },
-    { id: '7', name: 'Zone 7' },
-    { id: '8', name: 'Zone 8' },
+  const zoneAreas: ZonePolygon[] = [
+    { id: 1, name: 'Zone 1', points: [[1.02, 1.05], [33.18, 1.17], [33.35, 15.24], [0.68, 15.37]], labelPosition: [15.91, 7.08] },
+    { id: 2, name: 'Zone 2', points: [[1.02, 15.95], [33.35, 15.83], [33.35, 41.58], [0.85, 41.58]], labelPosition: [14.22, 27.01] },
+    { id: 3, name: 'Zone 3', points: [[33.35, 58.53], [33.52, 42.08], [0.51, 42.33], [0.85, 58.41]], labelPosition: [15.58, 50.87] },
+    { id: 4, name: 'Zone 4', points: [[0.68, 59.08], [38.60, 59.33], [38.94, 98.52], [1.02, 98.39]], labelPosition: [16.93, 75.62] },
+    { id: 5, name: 'Zone 5', points: [[97.80, 98], [97.97, 81], [58.48, 81.10], [58.13, 97.96]], labelPosition: [77, 89] },
+    { id: 6, name: 'Zone 6', points: [[98.23, 80.46], [97.74, 64.35], [58.24, 64.35], [58.58, 80.18]], labelPosition: [78.89, 73.40] },
+    { id: 7, name: 'Zone 7', points: [[97.86, 63.52], [97.86, 19.68], [58.18, 19.64], [58.58, 63.10]], labelPosition: [76.52, 42.62] },
+    { id: 8, name: 'Zone 8', points: [[97.69, 19.05], [97.63, 1.47], [34.31, 1.47], [34.20, 18.80]], labelPosition: [61.63, 9.42] },
+    { id: 9, name: 'Zone 9', points: [[39.11, 98.35], [57.90, 98.60], [57.22, 19.97], [34.20, 19.72],[34.20,58.79],[39.28,59.04]], labelPosition: [47.74, 50.75] },
   ];
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
+  const isPointInPolygon = (point: [number, number], polygon: number[][]): boolean => {
+    const [x, y] = point;
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const [xi, yi] = polygon[i];
+      const [xj, yj] = polygon[j];
+      const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  const handleZoneClick = (zoneId: number) => {
+    router.push(`/zone/${zoneId}`);
+  };
 
-  useEffect(() => {
-    // Generate stars for universe background with varied properties
-    const newStars = Array.from({ length: 200 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 2.5 + 0.5,
-      delay: Math.random() * 5,
-      duration: Math.random() * 4 + 3, // Vary duration more
-    }));
-    setStars(newStars);
-
-    // Generate shooting stars with varied trajectories
-    const newShootingStars = Array.from({ length: 5 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 50,
-      delay: Math.random() * 15 + 2, // More spread out timing
-    }));
-    setShootingStars(newShootingStars);
-  }, []);
+  const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageRef.current) return;
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    if (showClickHelper) {
+      setClickCoords({ x, y });
+      console.log(`Clicked at: [${x.toFixed(2)}, ${y.toFixed(2)}]`);
+      return;
+    }
+    const clickedZone = zoneAreas.find(zone => isPointInPolygon([x, y], zone.points));
+    if (clickedZone) handleZoneClick(clickedZone.id);
+  };
 
   return (
-    <div className="min-h-screen bg-black overflow-hidden relative">
-      {/* Universe Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {/* Deep Space Background - Much Darker */}
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-gray-950" />
-        
-        {/* Milky Way Effect */}
-        <div 
-          className="absolute top-0 left-1/4 w-[200%] h-32 bg-gradient-to-r from-transparent via-white to-transparent opacity-5 blur-3xl animate-milky-way"
-          style={{ transform: 'rotate(-45deg)', transformOrigin: 'center' }}
-        />
-        <div 
-          className="absolute top-1/3 right-0 w-[180%] h-40 bg-gradient-to-l from-transparent via-purple-300 to-transparent opacity-5 blur-3xl animate-milky-way"
-          style={{ transform: 'rotate(-50deg)', animationDelay: '20s', animationDuration: '100s' }}
-        />
-        
-        {/* Stars - Twinkling effect */}
-        {stars.map((star) => (
-          <div
-            key={star.id}
-            className="absolute rounded-full bg-white animate-twinkle"
-            style={{
-              left: `${star.x}%`,
-              top: `${star.y}%`,
-              width: `${star.size}px`,
-              height: `${star.size}px`,
-              animationDelay: `${star.delay}s`,
-              animationDuration: `${star.duration}s`,
-              boxShadow: '0 0 4px rgba(255,255,255,0.8)',
-            }}
-          />
-        ))}
+    <div className="min-h-screen py-4 md:py-8">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-4 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-4">
+            LED World Showroom
+          </h1>
+          <p className="text-white/70 text-sm md:text-lg">
+            Click on any zone to explore products
+          </p>
+        </div>
 
-        {/* Shooting Stars */}
-        {shootingStars.map((star) => (
-          <div
-            key={`shooting-${star.id}`}
-            className="absolute animate-shooting-star"
-            style={{
-              left: `${star.x}%`,
-              top: `${star.y}%`,
-              animationDelay: `${star.delay}s`,
-            }}
+        {/* Planar View Image with Interactive Zones */}
+        <div className="relative max-w-4xl mx-auto">
+          <div 
+            className="relative group cursor-pointer"
+            onClick={handleImageClick}
           >
-            <div className="w-1 h-1 bg-white rounded-full" style={{
-              boxShadow: '0 0 20px 2px rgba(255,255,255,0.8), 0 0 40px 4px rgba(200,200,255,0.4)',
-            }} />
-            <div className="absolute w-24 h-[2px] bg-gradient-to-r from-white to-transparent -translate-y-[1px]" style={{
-              opacity: 0.6,
-            }} />
-          </div>
-        ))}
+            {/* Loading placeholder */}
+            {!imageLoaded && (
+              <div className="absolute inset-0 bg-white/5 backdrop-blur-xl rounded-xl md:rounded-2xl animate-pulse flex items-center justify-center">
+                <div className="text-white/50 text-sm">Loading floor plan...</div>
+              </div>
+            )}
 
-        {/* Additional bright stars (planets/distant stars) */}
-        <div className="absolute top-[15%] left-[20%] w-2 h-2 rounded-full bg-blue-100 animate-twinkle-fast" style={{ boxShadow: '0 0 10px 2px rgba(200,220,255,0.6)', animationDelay: '0.5s' }} />
-        <div className="absolute top-[40%] right-[25%] w-2.5 h-2.5 rounded-full bg-yellow-50 animate-twinkle-fast" style={{ boxShadow: '0 0 12px 3px rgba(255,250,200,0.6)', animationDelay: '1.2s' }} />
-        <div className="absolute bottom-[30%] left-[15%] w-1.5 h-1.5 rounded-full bg-purple-100 animate-twinkle-fast" style={{ boxShadow: '0 0 8px 2px rgba(220,200,255,0.6)', animationDelay: '2s' }} />
-        <div className="absolute top-[60%] right-[40%] w-2 h-2 rounded-full bg-red-50 animate-twinkle-fast" style={{ boxShadow: '0 0 10px 2px rgba(255,200,200,0.5)', animationDelay: '0.8s' }} />
-        
-        {/* Nebula clouds */}
-        <div className="absolute top-[20%] right-[10%] w-64 h-64 rounded-full bg-purple-500 opacity-5 blur-[100px] animate-drift" style={{ animationDuration: '60s' }} />
-        <div className="absolute bottom-[25%] left-[15%] w-80 h-80 rounded-full bg-blue-500 opacity-5 blur-[120px] animate-drift" style={{ animationDuration: '80s', animationDelay: '10s' }} />
-        
-        {/* Spotlight effect following cursor */}
-        <div
-          className="absolute w-96 h-96 rounded-full pointer-events-none"
-          style={{
-            left: mousePosition.x - 192,
-            top: mousePosition.y - 192,
-            background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
-            transition: 'left 0.3s ease-out, top 0.3s ease-out',
-          }}
-        />
-      </div>
-
-      <main className="container mx-auto px-4 py-16 relative z-10">
-        <div className="text-center mb-16">
-          <div className="relative inline-block mb-8">
-            <img 
-              src="/LEDWORLD-LOGO-2024-1-1.png" 
-              alt="LED World" 
-              className="h-24 md:h-32 w-auto mx-auto animate-fade-in brightness-0 invert"
-              style={{ filter: 'brightness(0) invert(1) drop-shadow(0 0 20px rgba(255,255,255,0.5))' }}
+            {/* Main Image */}
+            <img
+              ref={imageRef}
+              src="/planar-view.png"
+              alt="Showroom Floor Plan"
+              className={`w-full h-auto rounded-xl md:rounded-2xl border border-white/20 shadow-2xl transition-all duration-300 ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={() => setImageLoaded(true)}
             />
+
+            {/* SVG Overlay for Polygon Zones */}
+            {imageLoaded && (
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                {zoneAreas.map((zone) => {
+                  const polygonPoints = zone.points.map(([x, y]) => `${x},${y}`).join(' ');
+                  return (
+                    <g key={zone.id}>
+                      <polygon
+                        points={polygonPoints}
+                        className={`cursor-pointer transition-all duration-300 pointer-events-auto ${
+                          hoveredZone === zone.id
+                            ? 'fill-white/30 stroke-white stroke-[0.5]'
+                            : 'fill-white/0 stroke-white/0 hover:fill-white/20 hover:stroke-white/50 hover:stroke-[0.3]'
+                        }`}
+                        onMouseEnter={() => setHoveredZone(zone.id)}
+                        onMouseLeave={() => setHoveredZone(null)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleZoneClick(zone.id);
+                        }}
+                      />
+                      {zone.labelPosition && hoveredZone === zone.id && (
+                        <text
+                          x={zone.labelPosition[0]}
+                          y={zone.labelPosition[1]}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className="fill-white font-bold text-[4px] pointer-events-none drop-shadow-lg"
+                          style={{ textShadow: '0 0 10px rgba(0,0,0,0.8)' }}
+                        >
+                          {zone.name}
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+              </svg>
+            )}
           </div>
-          <p className="text-2xl text-white animate-slide-up opacity-0 animation-delay-200 font-light tracking-wide">
-            <span className="glow-text-subtle">Virtual Showroom Assistant</span>
-          </p>
-          <p className="text-lg text-white/70 mt-2 animate-slide-up opacity-0 animation-delay-300">
-            Illuminate Your Space - Select a Zone to Explore
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {zones.map((zone, index) => (
-            <Link
-              href={`/zone/${zone.id}`}
-              key={zone.id}
-              className="group relative text-white p-10 rounded-3xl border-2 border-white/30 backdrop-blur-xl bg-white/5 transform transition-all duration-700 hover:scale-110 hover:bg-white/10 hover:border-white/60 animate-slide-up opacity-0 overflow-hidden shadow-2xl shadow-white/10 block"
-              style={{ animationDelay: `${index * 150 + 500}ms` }}
-            >
-              {/* Glow effect on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent animate-shimmer"></div>
-                <div className="absolute inset-0 shadow-glow"></div>
-              </div>
-
-              {/* Content */}
-              <div className="relative z-10">
-                <div className="text-6xl font-extrabold mb-3 transition-all duration-700 group-hover:scale-125">
-                  {zone.id}
-                </div>
-                <div className="text-2xl font-semibold tracking-wide mb-4">{zone.name}</div>
-                
-                {/* Animated border line */}
-                <div className="relative h-1 bg-white/30 rounded-full overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                </div>
-
-                {/* Corner accents */}
-                <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              </div>
-
-              {/* Ripple effect */}
-              <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 group-hover:animate-ripple border-2 border-white"></div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="text-center mt-20 animate-fade-in opacity-0 animation-delay-1200">
+        {/* Quick Links */}
+        <div className="text-center mt-6 md:mt-12 flex flex-wrap justify-center gap-3 md:gap-4">
           <Link
-            href="/planar-view"
-            className="inline-flex items-center gap-3 px-8 py-4 mb-8 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-2 border-white/30 hover:border-white/60 backdrop-blur-xl transition-all duration-300 hover:scale-105 group"
+            href="/zones"
+            className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-white/10 hover:bg-white/20 text-white text-sm md:text-base rounded-lg md:rounded-xl border border-white/20 backdrop-blur-xl transition-all"
           >
-            <svg className="w-6 h-6 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
-            <span className="font-semibold text-lg">View Showroom Floor Plan</span>
+            <span>View All Zones</span>
           </Link>
-          
-          <p className="text-white/60 text-sm tracking-widest uppercase mb-6">
-            Experience Premium Lighting Solutions
-          </p>
-          <div className="flex justify-center gap-3">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="w-2 h-2 bg-white rounded-full animate-glow-pulse"
-                style={{ animationDelay: `${i * 150}ms` }}
-              ></div>
-            ))}
-          </div>
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-white/10 hover:bg-white/20 text-white text-sm md:text-base rounded-lg md:rounded-xl border border-white/20 backdrop-blur-xl transition-all"
+          >
+            <span>Browse Products</span>
+          </Link>
         </div>
-      </main>
-
-      {/* Vignette effect */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-radial from-transparent via-transparent to-black opacity-60"></div>
+      </div>
     </div>
   );
 }

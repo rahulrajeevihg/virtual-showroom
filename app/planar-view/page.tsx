@@ -29,50 +29,56 @@ export default function PlanarViewPage() {
     { 
       id: 1, 
       name: 'Zone 1', 
-      points: [[5, 5], [30, 5], [30, 30], [5, 30]], // Top-left rectangular area
-      labelPosition: [17.5, 17.5]
+      points: [[1.02, 1.05], [33.18, 1.17], [33.35, 15.24], [0.68, 15.37]], // Top-left rectangular area
+      labelPosition: [15.91, 7.08]
     },
     { 
       id: 2, 
       name: 'Zone 2', 
-      points: [[35, 5], [60, 5], [60, 30], [35, 30]], // Top-center
-      labelPosition: [47.5, 17.5]
+      points: [[1.02, 15.95], [33.35, 15.83], [33.35, 41.58], [0.85, 41.58]], // Top-center
+      labelPosition: [14.22, 27.01]
     },
     { 
       id: 3, 
       name: 'Zone 3', 
-      points: [[65, 5], [90, 5], [90, 30], [65, 30]], // Top-right
-      labelPosition: [77.5, 17.5]
+      points: [[33.35, 58.53], [33.52, 42.08], [0.51, 42.33], [0.85, 58.41]], // Top-right
+      labelPosition: [15.58, 50.87]
     },
     { 
       id: 4, 
       name: 'Zone 4', 
-      points: [[5, 35], [30, 35], [30, 60], [5, 60]], // Middle-left
-      labelPosition: [17.5, 47.5]
+      points: [[0.68, 59.08], [38.60, 59.33], [38.94, 98.52], [1.02, 98.39]], // Middle-left
+      labelPosition: [16.93, 75.62]
     },
     { 
       id: 5, 
       name: 'Zone 5', 
-      points: [[35, 35], [60, 35], [60, 60], [35, 60]], // Center
-      labelPosition: [47.5, 47.5]
+      points: [[97.80, 98], [97.97, 81], [58.48, 81.10], [58.13, 97.96]], // Center
+      labelPosition: [77, 89]
     },
     { 
       id: 6, 
       name: 'Zone 6', 
-      points: [[65, 35], [90, 35], [90, 60], [65, 60]], // Middle-right
-      labelPosition: [77.5, 47.5]
+      points: [[98.23, 80.46], [97.74, 64.35], [58.24, 64.35], [58.58, 80.18]], // Middle-right
+      labelPosition: [78.89, 73.40]
     },
     { 
       id: 7, 
       name: 'Zone 7', 
-      points: [[5, 65], [45, 65], [45, 90], [5, 90]], // Bottom-left
-      labelPosition: [25, 77.5]
+      points: [[97.86, 63.52], [97.86, 19.68], [58.18, 19.64], [58.58, 63.10]], // Bottom-left
+      labelPosition: [76.52, 42.62]
     },
     { 
       id: 8, 
       name: 'Zone 8', 
-      points: [[50, 65], [90, 65], [90, 90], [50, 90]], // Bottom-right
-      labelPosition: [70, 77.5]
+      points: [[97.69, 19.05], [97.63, 1.47], [34.31, 1.47], [34.20, 18.80]], // Bottom-right
+      labelPosition: [61.63, 9.42]
+    },
+    { 
+      id: 9, 
+      name: 'Zone 9', 
+      points: [[39.11, 98.35], [57.90, 98.60], [57.22, 19.97], [34.20, 19.72],[34.20,58.79],[39.28,59.04]], // Bottom-right
+      labelPosition: [47.74, 50.75]
     },
   ];
 
@@ -226,59 +232,9 @@ export default function PlanarViewPage() {
               </div>
             )}
 
-            {/* Instruction overlay on hover */}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl flex items-center justify-center pointer-events-none">
-              <div className="text-white text-xl font-semibold">
-                Click on any zone to explore
-              </div>
-            </div>
+
           </div>
 
-          {/* Zone Legend */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {zoneAreas.map((zone) => (
-              <button
-                key={zone.id}
-                onClick={() => handleZoneClick(zone.id)}
-                onMouseEnter={() => setHoveredZone(zone.id)}
-                onMouseLeave={() => setHoveredZone(null)}
-                className={`p-4 rounded-xl backdrop-blur-xl border-2 transition-all duration-300 ${
-                  hoveredZone === zone.id
-                    ? 'bg-white/20 border-white scale-105'
-                    : 'bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/40'
-                }`}
-              >
-                <div className="text-3xl font-bold text-white mb-2">
-                  {zone.id}
-                </div>
-                <div className="text-sm text-white/70">
-                  {zone.name}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Coordinate Helper Toggle (for developers) */}
-        <div className="text-center mt-8">
-          <button
-            onClick={() => {
-              setShowClickHelper(!showClickHelper);
-              setClickCoords(null);
-            }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              showClickHelper
-                ? 'bg-red-500/20 border-2 border-red-500 text-red-300'
-                : 'bg-white/10 border-2 border-white/20 text-white/70 hover:bg-white/20'
-            }`}
-          >
-            {showClickHelper ? '🔴 Click Helper ON (click image to see coordinates)' : '⚙️ Enable Click Helper'}
-          </button>
-          {showClickHelper && (
-            <p className="text-white/50 text-xs mt-2">
-              Click on the image to get coordinates. Use these to adjust zone polygon points in the code.
-            </p>
-          )}
         </div>
 
         {/* Back to Home */}
