@@ -25,6 +25,9 @@ export default function ProductsPage() {
       const data = await fetchZoneProducts();
       return data.filter(p => p.disable === 0);
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1, // Only retry once for offline scenarios
+    retryDelay: 1000,
   });
   
   const categories = useMemo(() => {

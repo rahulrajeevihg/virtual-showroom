@@ -68,6 +68,19 @@ export async function fetchZoneProducts(): Promise<ZoneProduct[]> {
     return data.message || [];
   } catch (error) {
     console.error('Error fetching zone products:', error);
+    
+    // If fetch fails, try to load from IndexedDB as fallback
+    if (typeof window !== 'undefined') {
+      try {
+        const { getAllFromStore, STORES } = await import('./indexedDB');
+        const offlineProducts = await getAllFromStore(STORES.PRODUCTS);
+        console.log(`Loaded ${offlineProducts.length} products from offline storage (fallback)`);
+        return offlineProducts as ZoneProduct[];
+      } catch (dbError) {
+        console.error('Error loading from IndexedDB:', dbError);
+      }
+    }
+    
     return [];
   }
 }
