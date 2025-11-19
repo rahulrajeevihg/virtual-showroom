@@ -26,6 +26,9 @@ export default function Header() {
             <Link href="/zones" className="text-white hover:text-white/70 transition">
               Zones
             </Link>
+            <Link href="/planar-view" className="text-white hover:text-white/70 transition">
+              Floor Plan
+            </Link>
             <Link href="/products" className="text-white hover:text-white/70 transition">
               All Products
             </Link>
@@ -57,6 +60,9 @@ export default function Header() {
           <div className="md:hidden mt-4 pb-4 space-y-3 animate-slide-up">
             <Link href="/zones" className="block text-white hover:text-white/70 transition">
               Zones
+            </Link>
+            <Link href="/planar-view" className="block text-white hover:text-white/70 transition">
+              Floor Plan
             </Link>
             <Link href="/products" className="block text-white hover:text-white/70 transition">
               All Products
