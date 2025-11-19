@@ -32,8 +32,22 @@ export interface BrandSummary {
 
 /**
  * Fetch all zone products from ERPNext
+ * If offline, returns products from IndexedDB
  */
 export async function fetchZoneProducts(): Promise<ZoneProduct[]> {
+  // Check if we're in the browser and offline
+  if (typeof window !== 'undefined' && !navigator.onLine) {
+    try {
+      const { getAllFromStore, STORES } = await import('./indexedDB');
+      const offlineProducts = await getAllFromStore(STORES.PRODUCTS);
+      console.log(`Loaded ${offlineProducts.length} products from offline storage`);
+      return offlineProducts as ZoneProduct[];
+    } catch (error) {
+      console.error('Error loading offline products:', error);
+      return [];
+    }
+  }
+
   try {
     const response = await fetch(
       `${ERPNEXT_URL}/api/method/qcshr.controller.api.zone_products_list`,

@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import QRScanner from "@/components/QRScanner";
 import InstallPrompt from "@/components/InstallPrompt";
+import OfflineBanner from "@/components/OfflineBanner";
+import AutoSync from "@/components/AutoSync";
 import QueryProvider from "@/providers/QueryProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Toaster } from "react-hot-toast";
@@ -50,7 +52,9 @@ export default function RootLayout({
         <QueryProvider>
           <ErrorBoundary>
             <WishlistProvider>
+              <AutoSync />
               <Header />
+              <OfflineBanner />
               <main className="pt-20">{children}</main>
               <Footer />
               <QRScanner />

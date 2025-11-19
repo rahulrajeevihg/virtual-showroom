@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import SyncButton from './SyncButton';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,6 +33,9 @@ export default function Header() {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
+            {/* Sync Button */}
+            <SyncButton />
+            
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
