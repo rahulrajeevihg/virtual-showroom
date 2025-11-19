@@ -1,7 +1,7 @@
 // ERPNext API integration
 
-const ERPNEXT_URL = 'https://erp.ihgind.com';
-const API_TOKEN = '5a58f74d3a6048c:b76e8329ac883ff';
+const ERPNEXT_URL = process.env.NEXT_PUBLIC_ERPNEXT_URL || 'https://erp.ihgind.com';
+const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || '';
 
 export interface ZoneProduct {
   zone: string;

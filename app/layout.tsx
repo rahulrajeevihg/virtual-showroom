@@ -6,6 +6,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import QRScanner from "@/components/QRScanner";
 import InstallPrompt from "@/components/InstallPrompt";
+import QueryProvider from "@/providers/QueryProvider";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { Toaster } from "react-hot-toast";
 
 const montserrat = Montserrat({ 
   subsets: ["latin"],
@@ -44,13 +47,41 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className={montserrat.className}>
-        <WishlistProvider>
-          <Header />
-          <main className="pt-20">{children}</main>
-          <Footer />
-          <QRScanner />
-          <InstallPrompt />
-        </WishlistProvider>
+        <QueryProvider>
+          <ErrorBoundary>
+            <WishlistProvider>
+              <Header />
+              <main className="pt-20">{children}</main>
+              <Footer />
+              <QRScanner />
+              <InstallPrompt />
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    color: '#fff',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                  },
+                  success: {
+                    iconTheme: {
+                      primary: '#10b981',
+                      secondary: '#fff',
+                    },
+                  },
+                  error: {
+                    iconTheme: {
+                      primary: '#ef4444',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+            </WishlistProvider>
+          </ErrorBoundary>
+        </QueryProvider>
       </body>
     </html>
   );

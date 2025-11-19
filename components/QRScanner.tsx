@@ -67,9 +67,11 @@ export default function QRScanner() {
 
   useEffect(() => {
     return () => {
-      stopScanning();
+      if (scannerRef.current && isScanning) {
+        scannerRef.current.stop().catch(console.error);
+      }
     };
-  }, []);
+  }, [isScanning]);
 
   return (
     <>
