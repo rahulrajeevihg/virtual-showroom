@@ -54,16 +54,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-white font-semibold mb-4">Contact Us</h4>
-            <ul className="space-y-2 text-sm text-white/60">
-              <li>123 LED Street</li>
-              <li>Lighting City, LC 12345</li>
-              <li>Phone: (555) 123-4567</li>
-              <li>Email: info@ledworld.com</li>
-            </ul>
-          </div>
         </div>
 
         <div className="border-t border-white/10 mt-8 pt-8 text-center text-white/60 text-sm">
