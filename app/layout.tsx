@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { WishlistProvider } from "@/contexts/WishlistContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import QRScanner from "@/components/QRScanner";
-import InstallPrompt from "@/components/InstallPrompt";
-import OfflineBanner from "@/components/OfflineBanner";
-import AutoSync from "@/components/AutoSync";
+import { AuthProvider } from "@/contexts/AuthContext";
+import AuthGuard from "@/components/AuthGuard";
 import QueryProvider from "@/providers/QueryProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { Toaster } from "react-hot-toast";
 
 const montserrat = Montserrat({ 
   subsets: ["latin"],
@@ -51,39 +45,11 @@ export default function RootLayout({
       <body className={montserrat.className}>
         <QueryProvider>
           <ErrorBoundary>
-            <WishlistProvider>
-              <AutoSync />
-              <Header />
-              <OfflineBanner />
-              <main className="pt-20">{children}</main>
-              <Footer />
-              <QRScanner />
-              <InstallPrompt />
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 3000,
-                  style: {
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)',
-                    color: '#fff',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                  },
-                  success: {
-                    iconTheme: {
-                      primary: '#10b981',
-                      secondary: '#fff',
-                    },
-                  },
-                  error: {
-                    iconTheme: {
-                      primary: '#ef4444',
-                      secondary: '#fff',
-                    },
-                  },
-                }}
-              />
-            </WishlistProvider>
+            <AuthProvider>
+              <AuthGuard>
+                {children}
+              </AuthGuard>
+            </AuthProvider>
           </ErrorBoundary>
         </QueryProvider>
       </body>

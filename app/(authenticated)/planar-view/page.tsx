@@ -137,12 +137,12 @@ export default function PlanarViewPage() {
             Showroom Planar View
           </h1>
           <p className="text-white/70 text-lg">
-            Click on any zone to explore products
+            Click on any zone to explore products 
           </p>
         </div>
 
         {/* Planar View Image with Interactive Zones */}
-        <div className="relative max-w-6xl mx-auto">
+        <div className="relative mx-auto w-96">
           <div 
             className="relative group cursor-pointer"
             onClick={handleImageClick}

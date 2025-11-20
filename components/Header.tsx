@@ -2,9 +2,18 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <header className="sticky top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/10">
@@ -35,6 +44,20 @@ export default function Header() {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
+            {/* User Info & Logout (Desktop) */}
+            {user && (
+              <div className="hidden md:flex items-center space-x-3">
+                <span className="text-white/70 text-sm">
+                  {user.full_name || user.username}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg border border-white/20 transition"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -63,6 +86,21 @@ export default function Header() {
             <Link href="/products" className="block text-white hover:text-white/70 transition">
               All Products
             </Link>
+            {user && (
+              <>
+                <div className="border-t border-white/20 pt-3 mt-3">
+                  <span className="block text-white/70 text-sm mb-3">
+                    {user.full_name || user.username}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg border border-white/20 transition"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </nav>

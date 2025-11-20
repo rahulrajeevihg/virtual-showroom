@@ -158,6 +158,17 @@ export async function getBrandsByZoneAndCategory(
 }
 
 /**
+ * Get products by zone and category (all brands)
+ */
+export async function getProductsByZoneAndCategory(
+  zone: string,
+  category: string
+): Promise<ZoneProduct[]> {
+  const products = await getProductsByZone(zone);
+  return products.filter(p => (p.category_list || 'Uncategorized') === category);
+}
+
+/**
  * Get products by zone, category, and brand
  */
 export async function getProductsByZoneCategoryBrand(
