@@ -1,15 +1,30 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const { user, logout } = useAuth();
   const router = useRouter();
+
+  // Hide header on scroll down, show on scroll up (mobile only)
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (window.innerWidth < 768) {
+        setShowHeader(currentY < 50 || currentY < lastScrollY);
+        setLastScrollY(currentY);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const handleLogout = async () => {
     await logout();
@@ -26,7 +41,10 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/10">
+    <header
+      className={`sticky top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/10 transition-transform duration-300 md:translate-y-0 ${showHeader ? 'translate-y-0' : '-translate-y-full'} md:block`}
+      style={{ willChange: 'transform' }}
+    >
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}

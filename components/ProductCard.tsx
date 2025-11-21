@@ -95,8 +95,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Price */}
-        <div className="flex items-center justify-center pt-4 border-t border-white/10">
-          <div className="text-2xl font-bold text-white">${product.price}</div>
+        <div className="flex items-center justify-center pt-4 border-t border-white/10 min-h-[3rem]">
+          <div className="text-xl font-bold text-white break-words whitespace-nowrap px-2 w-full text-center">${product.price}</div>
         </div>
       </div>
 
