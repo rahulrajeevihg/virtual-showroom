@@ -9,7 +9,7 @@ import { getCategoriesByZone, getBrandsByZoneAndCategory, getProductsByZoneCateg
 export default function ZonePage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const zoneId = (params.id as string).toUpperCase();
+  const zoneId = params.id as string;
   const zone = zones.find(z => z.id === zoneId);
   
   const selectedCategory = searchParams.get('category');
@@ -81,18 +81,9 @@ export default function ZonePage() {
     }
   }, [zoneId, selectedCategory, selectedBrand]);
 
-  if (!zone) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Zone Not Found</h1>
-          <Link href="/" className="text-white/60 hover:text-white transition">
-            Return to Home
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // Use zone data if available, otherwise create fallback
+  const zoneName = zone?.name || `Zone ${zoneId}`;
+  const zoneDescription = zone?.description || 'LED Lighting Solutions';
 
   // Breadcrumb
   const breadcrumbs = [
@@ -137,9 +128,9 @@ export default function ZonePage() {
 
           <div className="text-center mb-12">
             <h1 className="text-6xl md:text-7xl font-extrabold text-white mb-4 glow-text">
-              Zone {zoneId}
+              {zoneName}
             </h1>
-            <p className="text-2xl text-white/80 mb-2">{zone.description}</p>
+            <p className="text-2xl text-white/80 mb-2">{zoneDescription}</p>
             {!selectedCategory && (
               <p className="text-white/60">{categories.length} Categories Available</p>
             )}
