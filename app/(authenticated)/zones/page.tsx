@@ -11,8 +11,8 @@ export default function ZonesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen bg-black py-12 px-4 overflow-x-hidden w-full">
+      <div className="container mx-auto w-full max-w-full">
         <h1 className="text-5xl font-bold text-white mb-6 text-center glow-text-subtle">
           Browse by Zone
         </h1>

@@ -82,7 +82,7 @@ export default function Home() {
         </div>
 
         {/* Planar View Image with Interactive Zones */}
-        <div className="relative w-96 mx-auto">
+        <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-2xl xl:max-w-4xl mx-auto">
           <div 
             className="relative group cursor-pointer"
             onClick={handleImageClick}

@@ -129,8 +129,8 @@ export default function PlanarViewPage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen py-8 overflow-x-hidden w-full">
+      <div className="container mx-auto px-0 w-full max-w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">
@@ -142,7 +142,7 @@ export default function PlanarViewPage() {
         </div>
 
         {/* Planar View Image with Interactive Zones */}
-        <div className="relative mx-auto w-96">
+        <div className="relative mx-auto w-full max-w-[16rem] sm:max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl">
           <div 
             className="relative group cursor-pointer"
             onClick={handleImageClick}
@@ -159,9 +159,10 @@ export default function PlanarViewPage() {
               ref={imageRef}
               src="/planar-view.png"
               alt="Showroom Planar View"
-              className={`w-full h-auto rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${
+              className={`w-full max-w-full h-auto rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${
                 imageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
+              style={{ display: 'block', objectFit: 'contain', maxWidth: '100%' }}
               onLoad={() => setImageLoaded(true)}
             />
 

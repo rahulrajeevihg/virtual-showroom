@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { fetchZoneProducts, getFullImageUrl, type ZoneProduct } from '@/lib/erpnext-api';
@@ -11,6 +11,19 @@ import ProductCardSkeleton from '@/components/ProductCardSkeleton';
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showBackToTop, setShowBackToTop] = useState(false);
+    // Show Back to Top button after scrolling down
+    useEffect(() => {
+      const handleScroll = () => {
+        setShowBackToTop(window.scrollY > 300);
+      };
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const handleBackToTop = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
   const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'name'>('name');
   const [filterInStock, setFilterInStock] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -110,8 +123,20 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black py-12 px-4">
-      <div className="container mx-auto">
+    <div className="min-h-screen bg-black py-12 px-4 overflow-x-hidden w-full">
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={handleBackToTop}
+          className="fixed bottom-8 right-8 z-50 bg-white/20 hover:bg-white/40 text-white rounded-full p-3 shadow-lg border border-white/30 transition-all backdrop-blur-md flex items-center"
+          aria-label="Back to top"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
+      )}
+      <div className="container mx-auto w-full max-w-full px-0">
         <h1 className="text-5xl font-bold text-white mb-12 text-center glow-text-subtle">
           All Products
         </h1>

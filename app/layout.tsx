@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import AuthGuard from "@/components/AuthGuard";
 import QueryProvider from "@/providers/QueryProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ProgressBar from "@/components/ProgressBar";
 
 const montserrat = Montserrat({ 
   subsets: ["latin"],
@@ -42,7 +43,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={montserrat.className}>
+      <body className={montserrat.className + ' overflow-x-hidden'}>
         <QueryProvider>
           <ErrorBoundary>
             <AuthProvider>

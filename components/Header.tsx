@@ -7,12 +7,22 @@ import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const { user, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
     await logout();
     router.push('/login');
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (search.trim()) {
+      router.push(`/products?search=${encodeURIComponent(search.trim())}`);
+      setSearch("");
+      setIsMenuOpen(false);
+    }
   };
 
   return (
@@ -40,6 +50,19 @@ export default function Header() {
             <Link href="/products" className="text-white hover:text-white/70 transition">
               All Products
             </Link>
+            {/* Search Bar (Desktop) */}
+            <form onSubmit={handleSearchSubmit} className="ml-4 flex items-center">
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search products..."
+                className="px-3 py-2 rounded-lg bg-white/10 text-white placeholder-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 w-48"
+              />
+              <button type="submit" className="ml-2 px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg border border-white/20 transition">
+                Search
+              </button>
+            </form>
           </div>
 
           {/* Action Buttons */}
@@ -86,6 +109,19 @@ export default function Header() {
             <Link href="/products" className="block text-white hover:text-white/70 transition">
               All Products
             </Link>
+            {/* Search Bar (Mobile) */}
+            <form onSubmit={handleSearchSubmit} className="pt-2 flex items-center">
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search products..."
+                className="px-3 py-2 rounded-lg bg-white/10 text-white placeholder-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 w-full"
+              />
+              <button type="submit" className="ml-2 px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg border border-white/20 transition">
+                Search
+              </button>
+            </form>
             {user && (
               <>
                 <div className="border-t border-white/20 pt-3 mt-3">
