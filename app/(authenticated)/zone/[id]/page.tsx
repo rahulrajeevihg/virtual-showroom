@@ -278,19 +278,19 @@ export default function ZonePage() {
                     <p className="text-xs text-white/50 mb-2">{product.brand}</p>
 
                     {/* Price */}
-                    <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/10">
                       <Link 
                         href={`/product/${product.item_code}`}
-                        className="text-lg font-bold text-white hover:text-white/80 transition"
+                        className="text-base md:text-lg font-bold text-white hover:text-white/80 transition truncate"
                       >
                         AED {product.price.toFixed(2)}
                       </Link>
                       {product.total_stock_all_warehouses > 0 ? (
-                        <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-300 rounded-full border border-green-500/30">
+                        <span className="text-xs px-2 py-0.5 bg-green-500/20 text-green-300 rounded-full border border-green-500/30 whitespace-nowrap flex-shrink-0">
                           In Stock
                         </span>
                       ) : (
-                        <span className="text-xs px-2 py-0.5 bg-red-500/20 text-red-300 rounded-full border border-red-500/30">
+                        <span className="text-xs px-2 py-0.5 bg-red-500/20 text-red-300 rounded-full border border-red-500/30 whitespace-nowrap flex-shrink-0">
                           Out
                         </span>
                       )}
