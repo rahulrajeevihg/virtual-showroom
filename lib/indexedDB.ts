@@ -196,11 +196,14 @@ export async function getUnsyncedItems(): Promise<SyncQueueItem[]> {
   const db = await initDB();
   const transaction = db.transaction(STORES.SYNC_QUEUE, 'readonly');
   const store = transaction.objectStore(STORES.SYNC_QUEUE);
-  const index = store.index('synced');
 
   return new Promise((resolve, reject) => {
-    const request = index.getAll(IDBKeyRange.only(false));
-    request.onsuccess = () => resolve(request.result);
+    const request = store.getAll();
+    request.onsuccess = () => {
+      const allItems = request.result as SyncQueueItem[];
+      const unsyncedItems = allItems.filter(item => item.synced === false);
+      resolve(unsyncedItems);
+    };
     request.onerror = () => reject(request.error);
   });
 }
